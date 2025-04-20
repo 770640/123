@@ -1,56 +1,105 @@
 import request from '@/utils/request'
-import qs from 'querystring'
-
-export function login(data) {
+import { transformAbpListQuery } from '@/utils/abp'
+import store from '@/store'
+export function getUsers(query) {
   return request({
-    url: '/connect/token',
-    method: 'post',
-    headers: { 'content-type': 'application/x-www-form-urlencoded' },
-    data: qs.stringify(data)
-  })
-}
-export function CheckUsersState(userName) {
-  return request({
-    url: '/api/identity/organizations/CheckUsersState',
+    url: '/api/identity/users',
     method: 'get',
-    params:{userName}
+    params: transformAbpListQuery(query)
   })
 }
 
-export function getInfo() {
+export function getUserById(id) {
   return request({
-    url: '/api/identity/my-profile',
+    url: `/api/identity/users/${id}`,
     method: 'get'
   })
 }
-
-export function logout() {
+export function UpdateUserState(id) {
   return request({
-    url: '/api/account/logout',
+    url: `/api/identity/organizations/UpdateUserState?id=${id}`,
     method: 'get'
   })
 }
-
-export function register(data) {
+export function createUser(payload) {
   return request({
-    url: '/api/account/register',
+    url: '/api/identity/users',
     method: 'post',
-    data: data
+    data: payload
   })
 }
 
-export function setUserInfo(data) {
+export function createUserToOrg(payload) {
   return request({
-    url: '/api/identity/my-profile',
+    url: '/api/identity/users/create-to-organizations',
+    method: 'post',
+    data: payload
+  }).then(res=>{
+    store.dispatch('user/setAllUserListInfo')
+    return res
+  })
+}
+
+export function updateUser(payload) {
+  return request({
+    url: `/api/identity/users/${payload.id}`,
     method: 'put',
-    data: data
+    data: payload
   })
 }
 
-export function changePassword(data) {
+export function updateUserToOrg(payload) {
   return request({
-    url: '/api/identity/my-profile/change-password',
+    url: `/api/identity/users/${payload.id}/update-to-organizations`,
+    method: 'put',
+    data: payload
+  }).then(res=>{
+    store.dispatch('user/setAllUserListInfo')
+    return res
+  })
+}
+
+export function deleteUser(id) {
+  return request({
+    url: `/api/identity/users/${id}`,
+    method: 'delete'
+  }).then(res=>{
+    store.dispatch('user/setAllUserListInfo')
+    return res
+  })
+}
+
+export function getRolesByUserId(id) {
+  return request({
+    url: `/api/identity/users/${id}/roles`,
+    method: 'get'
+  })
+}
+
+export function getAssignableRoles() {
+  return request({
+    url: '/api/identity/users/assignable-roles',
+    method: 'get'
+  })
+}
+
+export function getOrganizationsByUserId(id, includeDetails = false) {
+  return request({
+    url: `/api/identity/users/${id}/organizations`,
+    method: 'get',
+    params: includeDetails
+  })
+}
+
+/**
+ * 添加成员到组织单元中
+ * @param {string} id
+ * @param {Array} ouId
+ */
+export function addToOrganization(id, ouIds) {
+  return request({
+    url: `/api/identity/users/${id}/add-to-organizations`,
     method: 'post',
-    data: data
+    data: ouIds
   })
 }

@@ -1,38 +1,48 @@
 import request from '@/utils/request'
+import { transformAbpListQuery } from '@/utils/abp'
 
-export function getRoutes() {
+export function getRoles(query) {
   return request({
-    url: '/vue-element-admin/routes',
+    url: '/api/identity/roles',
+    method: 'get',
+    params: transformAbpListQuery(query)
+  })
+}
+
+export function getRoleById(id) {
+  return request({
+    url: `/api/identity/roles/${id}`,
     method: 'get'
   })
 }
 
-export function getRoles() {
+export function createRole(payload) {
   return request({
-    url: '/vue-element-admin/roles',
-    method: 'get'
-  })
-}
-
-export function addRole(data) {
-  return request({
-    url: '/vue-element-admin/role',
+    url: '/api/identity/roles',
     method: 'post',
-    data
+    data: payload
   })
 }
 
-export function updateRole(id, data) {
+export function createRoleToOrg(payload) {
   return request({
-    url: `/vue-element-admin/role/${id}`,
+    url: '/api/identity/roles/create-to-organization',
+    method: 'post',
+    data: payload
+  })
+}
+
+export function updateRole(payload) {
+  return request({
+    url: `/api/identity/roles/${payload.id}`,
     method: 'put',
-    data
+    data: payload
   })
 }
 
 export function deleteRole(id) {
   return request({
-    url: `/vue-element-admin/role/${id}`,
+    url: `/api/identity/roles/${id}`,
     method: 'delete'
   })
 }
